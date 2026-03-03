@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} — ElectroShop{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'store:product_list' %}">Каталог</a></li>
+        <li class="breadcrumb-item"><a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></li>
+        <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <!-- Image -->
+    <div class="col-md-5 fade-in">
+        <div class="product-detail-img">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+            {% else %}
+            <i class="bi bi-box-seam" style="font-size:8rem; color:#cbd5e1;"></i>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Details -->
+    <div class="col-md-7 fade-in fade-in-1">
+        <div class="cat-label mb-2">{{ product.category.name }}</div>
+        <h1 style="font-size:1.6rem; font-weight:800; line-height:1.3; margin-bottom:16px;">{{ product.name }}</h1>
+
+        <!-- Price -->
+        <div class="mb-3">
+            {% if product.old_price %}
+            <div class="price-old" style="font-size:.95rem;">{{ product.old_price }} грн
+                {% if product.get_discount_percent %}
+                <span class="ms-2" style="background:#fef2f2; color:#ef4444; font-size:.72rem; font-weight:700; padding:2px 8px; border-radius:4px; font-family:'Space Mono',monospace;">
+                    −{{ product.get_discount_percent }}%
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
+            <div class="price-new" style="font-size:1.8rem;">{{ product.price }} грн</div>
+        </div>
+
+        <!-- Stock -->
+        {% if product.stock > 0 %}
+        <div class="detail-badge-stock mb-4">
+            <i class="bi bi-check-circle-fill"></i>
+            В наявності — {{ product.stock }} шт.
+        </div>
+        {% else %}
+        <div class="mb-4" style="display:inline-flex; align-items:center; gap:6px; background:#f1f5f9; color:#64748b; font-size:.82rem; font-weight:600; padding:5px 12px; border-radius:20px;">
+            <i class="bi bi-x-circle"></i> Немає в наявності
+        </div>
+        {% endif %}
+
+        <!-- Add to cart -->
+        {% if product.stock > 0 %}
+        <form action="{% url 'cart:cart_add' product.id %}" method="post" class="d-flex gap-3 align-items-center mb-4">
+            {% csrf_token %}
+            <select name="quantity" class="form-select" style="width:90px; border-radius:10px; border:1.5px solid #e2e8f0; font-size:.9rem; padding:10px 12px;">
+                {% for i in "12345678910"|make_list %}{% if forloop.counter <= 10 %}
+                <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                {% endif %}{% endfor %}
+            </select>
+            <input type="hidden" name="override" value="False">
+            <button type="submit" class="btn-primary-custom flex-grow-1" style="justify-content:center;">
+                <i class="bi bi-bag-plus"></i> До кошика
+            </button>
+        </form>
+        {% endif %}
+
+        <!-- Description -->
+        {% if product.description %}
+        <div class="card-custom">
+            <h5 style="font-size:.8rem; text-transform:uppercase; letter-spacing:1px; color:#64748b; font-family:'Space Mono',monospace;">Опис</h5>
+            <p style="font-size:.92rem; color:#475569; line-height:1.7; margin:0;">{{ product.description }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Related Products -->
+{% if related %}
+<div class="mt-5">
+    <div class="section-title">Схожі товари</div>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+        {% for item in related %}
+        <div class="col fade-in" style="animation-delay: {{ forloop.counter0 }}00ms">
+            <div class="product-card">
+                <a href="{{ item.get_absolute_url }}" class="text-decoration-none">
+                    <div class="product-img-wrap" style="height:160px;">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+                        {% else %}
+                        <i class="bi bi-box-seam" style="font-size:3rem; color:#cbd5e1;"></i>
+                        {% endif %}
+                    </div>
+                </a>
+                <div class="card-body" style="padding:12px;">
+                    <a href="{{ item.get_absolute_url }}" class="prod-name" style="font-size:.84rem; -webkit-line-clamp:2;">{{ item.name }}</a>
+                    <div class="price-new" style="font-size:1rem;">{{ item.price }} грн</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

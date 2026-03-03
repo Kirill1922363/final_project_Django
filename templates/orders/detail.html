@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Замовлення #{{ order.id }} — ElectroShop{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">Замовлення #{{ order.id }}</h1>
+    <a href="{% url 'orders:order_list' %}" class="btn btn-outline-secondary btn-sm">← Назад</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Товари</h5>
+                {% for item in order.items.all %}
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>{{ item.product.name }} <span class="text-muted">x{{ item.quantity }}</span></span>
+                    <span>{{ item.get_cost }} грн</span>
+                </div>
+                {% endfor %}
+                <div class="d-flex justify-content-between pt-3 fw-bold">
+                    <span>Разом:</span>
+                    <span class="text-danger">{{ order.get_total_cost }} грн</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Інформація</h5>
+                <p><strong>Статус:</strong><br>
+                    {% if order.status == 'pending' %}<span class="badge bg-warning text-dark">Очікує</span>
+                    {% elif order.status == 'processing' %}<span class="badge bg-info">В обробці</span>
+                    {% elif order.status == 'shipped' %}<span class="badge bg-primary">Відправлено</span>
+                    {% elif order.status == 'delivered' %}<span class="badge bg-success">Доставлено</span>
+                    {% elif order.status == 'cancelled' %}<span class="badge bg-danger">Скасовано</span>
+                    {% endif %}
+                </p>
+                <p><strong>Дата:</strong><br>{{ order.created|date:"d.m.Y H:i" }}</p>
+                <p><strong>Отримувач:</strong><br>{{ order.first_name }} {{ order.last_name }}</p>
+                <p><strong>Email:</strong><br>{{ order.email }}</p>
+                <p><strong>Телефон:</strong><br>{{ order.phone }}</p>
+                <p><strong>Адреса:</strong><br>{{ order.city }}, {{ order.address }}, {{ order.postal_code }}</p>
+                {% if order.comment %}
+                <p><strong>Коментар:</strong><br>{{ order.comment }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

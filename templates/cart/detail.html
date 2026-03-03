@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Кошик — ElectroShop{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4"><i class="bi bi-cart3"></i> Кошик</h1>
+
+{% if cart|length > 0 %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Товар</th>
+                            <th>Ціна</th>
+                            <th>Кількість</th>
+                            <th>Сума</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart %}
+                        <tr>
+                            <td class="align-middle">
+                                <a href="{{ item.product.get_absolute_url }}" class="text-decoration-none text-dark fw-semibold">
+                                    {{ item.product.name }}
+                                </a>
+                            </td>
+                            <td class="align-middle">{{ item.price }} грн</td>
+                            <td class="align-middle">
+                                <form action="{% url 'cart:cart_add' item.product.id %}" method="post">
+                                    {% csrf_token %}
+                                    {{ item.update_quantity_form.quantity }}
+                                    {{ item.update_quantity_form.override }}
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary ms-1">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="align-middle fw-bold text-danger">{{ item.total_price }} грн</td>
+                            <td class="align-middle">
+                                <form action="{% url 'cart:cart_remove' item.product.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Підсумок</h5>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Товарів:</span>
+                    <span>{{ cart|length }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Загальна сума:</span>
+                    <span class="fw-bold text-danger">{{ cart.get_total_price }} грн</span>
+                </div>
+                <a href="{% url 'orders:order_create' %}" class="btn btn-success w-100 mt-3">Оформити замовлення</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<p class="text-muted">Ваш кошик порожній.</p>
+<a href="{% url 'store:product_list' %}" class="btn btn-primary">До каталогу</a>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Особистий кабінет — ElectroShop{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4"><i class="bi bi-person-circle"></i> Особистий кабінет</h1>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Особисті дані</h5>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ u_form|crispy }}
+                    <hr>
+                    <h6>Додаткова інформація</h6>
+                    {{ p_form|crispy }}
+                    <button type="submit" class="btn btn-primary mt-2">Зберегти зміни</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Останні замовлення</h5>
+                {% if orders %}
+                {% for order in orders %}
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <strong>#{{ order.id }}</strong>
+                        <small class="text-muted d-block">{{ order.created|date:"d.m.Y" }}</small>
+                    </div>
+                    <div class="text-end">
+                        <div>{{ order.get_total_cost }} грн</div>
+                        <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-xs btn-outline-primary btn-sm">Деталі</a>
+                    </div>
+                </div>
+                {% endfor %}
+                <a href="{% url 'orders:order_list' %}" class="btn btn-outline-secondary btn-sm w-100 mt-3">Усі замовлення</a>
+                {% else %}
+                <p class="text-muted">Замовлень ще немає.</p>
+                <a href="{% url 'store:product_list' %}" class="btn btn-primary btn-sm">До каталогу</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

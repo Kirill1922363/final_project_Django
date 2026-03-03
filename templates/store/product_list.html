@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}{% if category %}{{ category.name }}{% else %}Каталог{% endif %} — ElectroShop{% endblock %}
+
+{% block content %}
+
+{% if not category and not query %}
+<!-- Hero Banner (тільки на головній) -->
+<div class="hero-banner fade-in">
+    <div class="badge-tag">⚡ Новинки 2026</div>
+    <h1>Техніка, яка<br>змінює правила</h1>
+    <p>Смартфони, ноутбуки, аудіо та аксесуари<br>з доставкою по всій Україні</p>
+    <a href="#catalog" class="btn-hero">
+        <i class="bi bi-grid-3x3-gap"></i> До каталогу
+    </a>
+</div>
+{% endif %}
+
+<div id="catalog" class="row g-4">
+    <!-- Sidebar Filters -->
+    <div class="col-lg-3">
+        <div class="filter-card">
+            <h6><i class="bi bi-sliders"></i> Фільтри</h6>
+            <form method="get">
+                {% if category %}<input type="hidden" name="category" value="{{ category.slug }}">{% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label" style="font-size:.82rem; font-weight:600; color:#64748b;">Ціна (грн)</label>
+                    <div class="d-flex gap-2">
+                        <input type="number" name="min_price" class="form-control" placeholder="Від"
+                               value="{{ request.GET.min_price }}" min="0">
+                        <input type="number" name="max_price" class="form-control" placeholder="До"
+                               value="{{ request.GET.max_price }}" min="0">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" style="font-size:.82rem; font-weight:600; color:#64748b;">Сортування</label>
+                    <select name="sort" class="form-select">
+                        <option value="-created" {% if sort == '-created' %}selected{% endif %}>🆕 Новинки</option>
+                        <option value="price"    {% if sort == 'price' %}selected{% endif %}>↑ Ціна (зростання)</option>
+                        <option value="-price"   {% if sort == '-price' %}selected{% endif %}>↓ Ціна (спадання)</option>
+                        <option value="name"     {% if sort == 'name' %}selected{% endif %}>А-Я Назва</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-filter">Застосувати</button>
+                <a href="{% url 'store:product_list' %}" class="btn-filter-reset">Скинути фільтри</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="page-title mb-0" style="font-size:1.2rem;">
+                {% if category %}{{ category.name }}
+                {% elif query %}Результати: «{{ query }}»
+                {% else %}Всі товари
+                {% endif %}
+            </h2>
+            <span style="font-size:.82rem; color:#64748b; font-family:'Space Mono',monospace;">
+                {{ products.count }} товарів
+            </span>
+        </div>
+
+        {% if products %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
+            {% for product in products %}
+            <div class="col fade-in">
+                <div class="product-card">
+                    {% if product.get_discount_percent %}
+                    <span class="badge-discount">−{{ product.get_discount_percent }}%</span>
+                    {% endif %}
+
+                    <a href="{{ product.get_absolute_url }}" class="text-decoration-none d-block">
+                        <div class="product-img-wrap">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                            {% else %}
+                            <i class="bi bi-box-seam" style="font-size:4rem; color:#cbd5e1;"></i>
+                            {% endif %}
+                        </div>
+                    </a>
+
+                    <div class="card-body">
+                        <div class="cat-label">{{ product.category.name }}</div>
+                        <a href="{{ product.get_absolute_url }}" class="prod-name">{{ product.name }}</a>
+
+                        <div class="price-wrap">
+                            {% if product.old_price %}
+                            <div class="price-old">{{ product.old_price }} грн</div>
+                            {% endif %}
+                            <div class="price-new">{{ product.price }} грн</div>
+                        </div>
+
+                        <form action="{% url 'cart:cart_add' product.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <input type="hidden" name="override" value="False">
+                            <button type="submit" class="btn-add-cart">
+                                <i class="bi bi-bag-plus"></i> До кошика
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            <div class="icon"><i class="bi bi-search"></i></div>
+            <h4>Товарів не знайдено</h4>
+            <p>Спробуйте змінити фільтри або пошуковий запит</p>
+            <a href="{% url 'store:product_list' %}" class="btn-primary-custom" style="text-decoration:none;">
+                Показати всі товари
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

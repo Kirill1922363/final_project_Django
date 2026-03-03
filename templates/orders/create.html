@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Оформлення замовлення — ElectroShop{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4"><i class="bi bi-bag-check"></i> Оформлення замовлення</h1>
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Дані доставки</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-success w-100 mt-3">
+                        <i class="bi bi-check-circle"></i> Підтвердити замовлення
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Ваше замовлення</h5>
+                {% for item in cart %}
+                <div class="d-flex justify-content-between mb-2">
+                    <span>{{ item.product.name }} <small class="text-muted">x{{ item.quantity }}</small></span>
+                    <span>{{ item.total_price }} грн</span>
+                </div>
+                {% endfor %}
+                <hr>
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>Разом:</span>
+                    <span class="text-danger">{{ cart.get_total_price }} грн</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
