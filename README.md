@@ -215,5 +215,5 @@ This project is for educational purposes. Feel free to use it as a base for your
 ---
 
 <div align="center">
-Made with ❤️ and Django &nbsp;·&nbsp; ElectroShop © 2026
+ElectroShop © 2026
 </div>
