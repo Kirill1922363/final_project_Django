@@ -11,12 +11,12 @@ class Profile(models.Model):
     )
     phone = models.CharField("Телефон", max_length=20, blank=True)
     address = models.TextField("Адрес", blank=True)
-    city = models.CharField("Город", max_length=100, blank=True)
+    city = models.CharField("Місто", max_length=100, blank=True)
     avatar = models.ImageField("Аватар", upload_to="avatars/", blank=True)
 
     class Meta:
-        verbose_name = "Профиль"
-        verbose_name_plural = "Профили"
+        verbose_name = "Профіль"
+        verbose_name_plural = "Профілі"
 
     def __str__(self):
-        return f"Профиль: {self.user.username}"
+        return f"Профіль: {self.user.username}"

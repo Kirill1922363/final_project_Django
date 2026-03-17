@@ -3,13 +3,13 @@ from django.urls import reverse
 
 
 class Category(models.Model):
-    name = models.CharField("Название", max_length=200)
+    name = models.CharField("Назва", max_length=200)
     slug = models.SlugField("Slug", unique=True)
     image = models.ImageField("Изображение", upload_to="categories/", blank=True)
 
     class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
+        verbose_name = "Категорія"
+        verbose_name_plural = "Категорії"
         ordering = ["name"]
 
     def __str__(self):
@@ -24,25 +24,25 @@ class Product(models.Model):
         Category,
         on_delete=models.CASCADE,
         related_name="products",
-        verbose_name="Категория",
+        verbose_name="Категорія",
     )
-    name = models.CharField("Название", max_length=200)
+    name = models.CharField("Назва", max_length=200)
     slug = models.SlugField("Slug", unique=True)
-    description = models.TextField("Описание", blank=True)
-    price = models.DecimalField("Цена", max_digits=10, decimal_places=2)
+    description = models.TextField("Опис", blank=True)
+    price = models.DecimalField("Ціна", max_digits=10, decimal_places=2)
     old_price = models.DecimalField(
         "Старая цена", max_digits=10, decimal_places=2, blank=True, null=True
     )
     image = models.ImageField("Изображение", upload_to="products/", blank=True)
-    stock = models.PositiveIntegerField("Остаток на складе", default=0)
-    available = models.BooleanField("Доступен", default=True)
-    featured = models.BooleanField("На главной", default=False)
-    created = models.DateTimeField("Создан", auto_now_add=True)
-    updated = models.DateTimeField("Обновлён", auto_now=True)
+    stock = models.PositiveIntegerField("Залишок на складі", default=0)
+    available = models.BooleanField("Доступний", default=True)
+    featured = models.BooleanField("На головній", default=False)
+    created = models.DateTimeField("Створено", auto_now_add=True)
+    updated = models.DateTimeField("Оновлено", auto_now=True)
 
     class Meta:
         verbose_name = "Товар"
-        verbose_name_plural = "Товары"
+        verbose_name_plural = "Товари"
         ordering = ["-created"]
 
     def __str__(self):
